@@ -12,11 +12,10 @@
     "resolveJsonModule": true,
     "declaration": false,
     "sourceMap": true,
-    "baseUrl": "src",
     "paths": {
-      "@modules/*": ["modules/*"],
-      "@infrastructure/*": ["infrastructure/*"],
-      "@shared/*": ["shared/*"]
+      "@modules/*": ["./src/modules/*"],
+      "@infrastructure/*": ["./src/infrastructure/*"],
+      "@shared/*": ["./src/shared/*"]
     }
   },
   "include": ["src"]
