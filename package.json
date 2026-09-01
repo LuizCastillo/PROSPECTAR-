@@ -1,0 +1,5 @@
+{
+  "name": "leadforge",
+  "private": true,
+  "workspaces": ["frontend", "server"]
+}
