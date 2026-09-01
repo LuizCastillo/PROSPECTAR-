@@ -271,3 +271,15 @@ create policy "authenticated all lead_status" on lead_status
   for all using (auth.role() = 'authenticated') with check (auth.role() = 'authenticated');
 create policy "authenticated read company_events" on company_events
   for select using (auth.role() = 'authenticated');
+
+-- Fix de segurança: search_path explícito na função de trigger
+-- (aplicado via Supabase:apply_migration como migration separada em produção,
+-- consolidado aqui para manter o schema local em sincronia)
+create or replace function set_updated_at()
+returns trigger as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$ language plpgsql
+set search_path = public;

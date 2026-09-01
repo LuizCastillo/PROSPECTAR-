@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
-import pinoHttp from 'pino-http';
+import { pinoHttp } from 'pino-http';
 import { env, integrationStatus } from '@shared/utils/env.js';
 import { errorHandler } from '@shared/errors/errorHandler.js';
 import { healthRouter } from './health.js';
