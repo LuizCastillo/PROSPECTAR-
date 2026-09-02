@@ -126,7 +126,8 @@ export function SearchPage() {
           </button>
           <p className="mt-2 text-xs text-ink-500">
             Dados via OpenStreetMap (Overpass + Nominatim). Cobertura varia por região — nem toda empresa
-            tem todos os campos preenchidos no OSM.
+            tem todos os campos preenchidos no OSM. Segmentos bem específicos ou quantidades grandes podem
+            demorar mais (o sistema tenta até 2 instâncias diferentes antes de desistir).
           </p>
         </div>
       </form>

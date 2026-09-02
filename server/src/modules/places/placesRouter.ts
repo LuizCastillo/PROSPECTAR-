@@ -12,7 +12,7 @@ const searchBodySchema = z.object({
   city: z.string().trim().min(2).max(100),
   state: z.string().trim().max(100).optional(),
   country: z.string().trim().max(100).optional(),
-  radiusMeters: z.number().int().positive().max(20_000).optional(),
+  radiusMeters: z.number().int().positive().max(15_000).optional(),
   maxResults: z.number().int().positive().max(100).optional(),
 });
 
