@@ -16,8 +16,11 @@ const schema = z.object({
 
   // Busca de empresas via OpenStreetMap — sem custo, sem API key.
   // URLs configuráveis para permitir trocar de instância pública (rate limits
-  // variam por provedor) ou apontar para uma instância própria no futuro.
-  OVERPASS_API_URL: z.string().url().default('https://overpass-api.de/api/interpreter'),
+  // variam por provedor, e algumas instâncias bloqueiam IPs de datacenter/cloud)
+  // ou apontar para uma instância própria no futuro.
+  // overpass-api.de (a instância "oficial") costuma bloquear tráfego vindo de
+  // provedores de nuvem (Render, AWS, etc.) — kumi.systems é mais tolerante.
+  OVERPASS_API_URL: z.string().url().default('https://overpass.kumi.systems/api/interpreter'),
   NOMINATIM_URL: z.string().url().default('https://nominatim.openstreetmap.org'),
   // Nominatim exige um identificador de app no User-Agent (política de uso).
   OSM_USER_AGENT: z.string().min(1).default('LeadForge/1.0 (contato: nao-configurado@leadforge.local)'),
