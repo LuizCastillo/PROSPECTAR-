@@ -32,7 +32,7 @@ export function LeadsPage() {
 
       <EmptyState
         title="Nenhum lead ainda"
-        description="Faça uma pesquisa para importar empresas do Google Places, ou aguarde a Fase 2 do desenvolvimento."
+        description="Faça uma pesquisa para importar empresas do OpenStreetMap, ou aguarde a Fase 2 do desenvolvimento."
       />
     </div>
   );

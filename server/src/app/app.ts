@@ -6,6 +6,7 @@ import { pinoHttp } from 'pino-http';
 import { env, integrationStatus } from '@shared/utils/env.js';
 import { errorHandler } from '@shared/errors/errorHandler.js';
 import { healthRouter } from './health.js';
+import { placesRouter } from '@modules/places/placesRouter.js';
 
 export function createApp() {
   const app = express();
@@ -29,8 +30,9 @@ export function createApp() {
   );
 
   app.use('/health', healthRouter);
+  app.use('/api/places', placesRouter);
 
-  // Módulos de domínio (companies, places, websites, ...) registram suas
+  // Demais módulos de domínio (companies, websites, ...) registram suas
   // rotas aqui conforme forem implementados nas próximas fases:
   // app.use('/api/companies', companiesRouter);
 

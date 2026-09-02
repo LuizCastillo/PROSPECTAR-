@@ -1,6 +1,6 @@
 # LeadForge (PROSPECTAR-)
 
-Sistema inteligente de prospecção: encontra empresas via Google Places, analisa presença digital e identidade visual, e gera um briefing + prompt completo para criação/redesign do site de cada empresa.
+Sistema inteligente de prospecção: encontra empresas via OpenStreetMap (Overpass + Nominatim), analisa presença digital e identidade visual, e gera um briefing + prompt completo para criação/redesign do site de cada empresa. Nenhuma dependência de APIs pagas do Google.
 
 ## Stack
 
@@ -41,7 +41,6 @@ npm run dev                # http://localhost:5173
 Projeto em construção por fases (ver `docs/ARCHITECTURE.md`). Fase atual: **Fase 1 — arquitetura, frontend base, backend, Supabase**.
 
 Integrações pendentes de credencial:
-- `GOOGLE_MAPS_API_KEY` — necessária para a Fase 2 (busca de empresas)
 - `LLM_API_KEY` — necessária a partir da Fase 4 (Business Analyzer / Website Strategist / Prompt Engine)
 
-Enquanto essas chaves não são configuradas, o sistema roda com um `MockLLMProvider` e a busca de empresas fica desabilitada — nada é inventado no lugar de dados reais.
+Busca de empresas (Fase 2) já funciona sem nenhuma chave — usa OpenStreetMap (Overpass API + Nominatim), gratuito e sem cadastro. Enquanto `LLM_API_KEY` não é configurada, o sistema roda com um `MockLLMProvider` — nada é inventado no lugar de dados reais.
