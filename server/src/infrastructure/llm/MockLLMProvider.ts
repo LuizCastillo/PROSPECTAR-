@@ -4,6 +4,7 @@ import type {
   GenerateWebsiteStrategyInput,
   GenerateWebsitePromptInput,
   GenerateOutreachMessageInput,
+  GenerateWebsiteMockupInput,
   BusinessAnalysis,
   WebsiteStrategy,
 } from './LLMProvider.js';
@@ -48,5 +49,18 @@ export class MockLLMProvider implements LLMProvider {
 
   async generateOutreachMessage(_input: GenerateOutreachMessageInput): Promise<string> {
     return 'LLM_API_KEY não configurada.';
+  }
+
+  async generateWebsiteMockup(input: GenerateWebsiteMockupInput): Promise<string> {
+    const name = String(input.companyFacts.name ?? 'Empresa');
+    return `<!doctype html>
+<html lang="pt-BR">
+<head><meta charset="UTF-8"><title>${name} — Protótipo</title></head>
+<body style="font-family: system-ui; padding: 40px; text-align: center;">
+  <h1>${name}</h1>
+  <p>LLM_API_KEY não configurada — este é um placeholder do MockLLMProvider.</p>
+  <p>Configure a chave para gerar o protótipo real com base nos dados e especificações informados.</p>
+</body>
+</html>`;
   }
 }

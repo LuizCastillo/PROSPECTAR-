@@ -70,6 +70,14 @@ export interface GenerateOutreachMessageInput {
   tone?: 'formal' | 'casual';
 }
 
+export interface GenerateWebsiteMockupInput {
+  companyId: string;
+  companyFacts: Record<string, unknown>; // nome, endereço, telefone, etc. — dados que o usuário digitou
+  visualIdentity?: { primaryColor?: string; secondaryColor?: string; accentColor?: string };
+  clientSpecifications?: string; // pedido de personalização em texto livre, digitado pelo usuário
+  websiteStrategy?: WebsiteStrategy;
+}
+
 // Contrato único que qualquer fornecedor de LLM deve implementar.
 // A API key do provider concreto SÓ existe no backend (env.LLM_API_KEY) —
 // nunca deve trafegar para o frontend.
@@ -78,4 +86,8 @@ export interface LLMProvider {
   generateWebsiteStrategy(input: GenerateWebsiteStrategyInput): Promise<WebsiteStrategy>;
   generateWebsitePrompt(input: GenerateWebsitePromptInput): Promise<string>;
   generateOutreachMessage(input: GenerateOutreachMessageInput): Promise<string>;
+  // Gera um protótipo de site em HTML/CSS estático (um único arquivo,
+  // autocontido) a partir dos dados da empresa e das especificações do
+  // cliente — para envio de aprovação antes do desenvolvimento real.
+  generateWebsiteMockup(input: GenerateWebsiteMockupInput): Promise<string>;
 }

@@ -3,22 +3,29 @@
 ## Pipeline principal
 
 ```
-BUSCA → OPENSTREETMAP (OVERPASS) → NORMALIZAÇÃO → BANCO → ENRIQUECIMENTO →
-ANÁLISE DE SITE → ANÁLISE DE IDENTIDADE VISUAL → ANÁLISE DE NEGÓCIO →
+CADASTRO MANUAL → BANCO → BUSINESS ANALYZER → BRAND (informado manualmente) →
 LEAD SCORE → ESTRATÉGIA DE SITE → PROMPT ENGINE → PROMPT FINAL
+                                 ↘ PROTÓTIPO (LLM) → LINK PARA APROVAÇÃO DO CLIENTE
 ```
+
+Decisão de arquitetura (histórico): o sistema tentou primeiro Google Places, depois
+OpenStreetMap/Overpass como fonte automática de dados de empresas. Ambos foram
+abandonados — Overpass público tinha instabilidade de rede/timeout e, mais
+importante, o usuário decidiu que faz mais sentido cadastrar manualmente os
+dados de clientes com quem já está negociando, em vez de prospectar em massa.
+Não há mais nenhuma integração de busca externa.
 
 Cada etapa é independente e registra seu próprio status em `companies.pipeline_status`:
 `DISCOVERED → IMPORTED → ENRICHING → ANALYZING → ANALYZED → PROMPT_READY` (ou `ERROR`).
+Empresas cadastradas manualmente entram direto como `IMPORTED`.
 
 ## Backend — organização por domínio
 
 ```
 server/src/
 ├── modules/            # um subdiretório por domínio de negócio
-│   ├── companies/
-│   ├── places/         # integração OpenStreetMap (Overpass + Nominatim)
-│   ├── websites/       # análise de site
+│   ├── companies/      # cadastro manual, listagem, geração de protótipo
+│   ├── websites/       # análise de site (futuro)
 │   ├── social/
 │   ├── branding/       # análise de identidade visual
 │   ├── analysis/        # BusinessAnalyzer
@@ -28,7 +35,6 @@ server/src/
 │   ├── crm/
 │   └── llm/
 ├── infrastructure/
-│   ├── osm/             # clientes Overpass API + Nominatim (OpenStreetMap)
 │   ├── supabase/        # cliente Supabase (service role)
 │   └── llm/             # LLMProvider (interface) + implementações
 ├── shared/
@@ -42,48 +48,44 @@ Regra: nenhum módulo importa um provider concreto de LLM diretamente — todos 
 
 ## Princípio "não inventar dados"
 
-Todo valor factual sobre uma empresa (telefone, endereço, horário, etc.) que passa pela LLM ou é armazenado carrega proveniência:
+Todo dado de empresa vem de digitação manual do usuário — ele é a fonte, não há
+"confiabilidade" a rastrear como havia com OSM. O que continua valendo: a LLM
+nunca declara como fato algo que não foi informado. Campos opcionais não
+preenchidos ficam `null`/`undefined`, nunca um valor inventado. Ver
+`server/src/infrastructure/llm/LLMProvider.ts`.
 
-```ts
-{ value: string | 'UNKNOWN' | 'NOT_FOUND', source: string, confidence: number, collectedAt: string }
-```
+## Cadastro manual de empresa
 
-A LLM interpreta e recomenda; nunca declara um fato sem essa estrutura por trás. Ver `server/src/infrastructure/llm/LLMProvider.ts`.
+- **Endpoint:** `POST /api/companies { name, category?, address?, city?, state?, postalCode?, phone?, website?, clientSpecifications?, visualIdentity? }`
+- **Especificações do cliente:** campo de texto livre (`client_specifications`, coluna própria na tabela `companies`) — pedidos de personalização que alimentam a geração do protótipo e do prompt final.
+- **Identidade visual:** cores primária/secundária/destaque, salvas em `brand_analysis` com `source: 'manual'`.
+- **Listagem:** `GET /api/companies`. **Detalhe:** `GET /api/companies/:id` (inclui a marca mais recente).
+
+## Geração de protótipo
+
+- **Gerar:** `POST /api/companies/:id/mockup` — chama `llmProvider.generateWebsiteMockup()`, que recebe os dados da empresa, a identidade visual e as especificações do cliente, e devolve HTML/CSS estático autocontido (uma página só, sem build step, pronta pra abrir direto no navegador).
+- Cada geração cria uma nova versão, salva na tabela `prompts` com `type: 'website_mockup'` (reaproveita a mesma estrutura de versionamento dos prompts de desenvolvimento).
+- **Servir:** `GET /api/companies/:id/mockup/raw?version=N` retorna o HTML puro (`Content-Type: text/html`) — o link dessa rota é o que se manda pro cliente aprovar.
+- Frontend: aba "Protótipo" em `/companies/:id`.
 
 ## Frontend — páginas
 
 ```
 /login
 /dashboard
-/search
+/new-company
 /leads
 /leads/:id
-/companies/:id (+ /analysis, /strategy)
+/companies/:id (abas: Overview, ..., Protótipo, ...)
 /companies/:companyId/prompts
 /settings
 ```
 
-Todas já roteadas em `frontend/src/router.tsx`, com estados vazios explícitos em vez de dado fake, até cada fase do backend estar pronta.
-
 ## Fases (status)
 
 - [x] Fase 1 — arquitetura, frontend base, backend, Supabase, GitHub
-- [x] Fase 2 — busca de empresas via OpenStreetMap (Overpass API + Nominatim), sem custo e sem API key — inclui mapa Leaflet no frontend
-- [ ] Fase 3 — website analyzer, brand analyzer, Lead Score
-- [ ] Fase 4 — Business Analyzer, Website Strategist (bloqueada: falta `LLM_API_KEY`)
-- [ ] Fase 5 — Prompt Engine, versionamento de prompts
-- [ ] Fase 6 — CRM, histórico
-- [ ] Fase 7 — testes, segurança, otimização
-- [ ] Fase 8 — deploy final, documentação, validação
-
-## Busca de empresas (Fase 2) — OpenStreetMap
-
-Fluxo: `Frontend → Backend (Express) → Overpass API → OpenStreetMap → Backend → Frontend`.
-
-- **Geocodificação:** `infrastructure/osm/nominatimClient.ts` transforma "cidade, estado" em lat/lon, com cache de 24h.
-- **Busca:** `modules/places/segmentTagMap.ts` mapeia o segmento digitado (ex: "barbearia") para tags OSM (`shop=hairdresser`), com fallback textual para segmentos não mapeados.
-- **Query:** `modules/places/overpassQueryBuilder.ts` monta a query Overpass QL (`nwr` + `around`), nunca a partir de input livre do usuário — só parâmetros validados por Zod no router.
-- **Normalização:** `modules/places/normalizePlace.ts` converte o resultado cru do OSM; campo ausente vira `'UNKNOWN'`, nunca inventado.
-- **Cache:** `TtlCache` em memória, 15min por combinação de busca, evita bater repetidamente no Overpass público.
-- **Endpoint:** `POST /api/places/search { segment, city, state?, country?, radiusMeters?, maxResults? }`.
-- **Mapa:** `frontend/src/components/map/PlacesMap.tsx`, Leaflet + tiles OpenStreetMap, marcador com popup mostrando os dados disponíveis.
+- [x] Cadastro manual de empresa + geração de protótipo via LLM (substituiu a Fase 2 original de busca automática)
+- [ ] Business Analyzer, Website Strategist, Lead Score, Prompt Engine completo (bloqueados: falta `LLM_API_KEY`)
+- [ ] CRM, histórico
+- [ ] Testes, segurança, otimização
+- [ ] Deploy final, documentação, validação

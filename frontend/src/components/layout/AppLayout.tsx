@@ -3,7 +3,7 @@ import clsx from 'clsx';
 
 const navItems = [
   { to: '/dashboard', label: 'Dashboard' },
-  { to: '/search', label: 'Nova pesquisa' },
+  { to: '/new-company', label: 'Nova empresa' },
   { to: '/leads', label: 'Leads' },
   { to: '/settings', label: 'Configurações' },
 ];

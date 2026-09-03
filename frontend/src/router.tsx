@@ -2,7 +2,7 @@ import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { LoginPage } from '@/pages/LoginPage';
 import { DashboardPage } from '@/pages/DashboardPage';
-import { SearchPage } from '@/pages/SearchPage';
+import { NewCompanyPage } from '@/pages/NewCompanyPage';
 import { LeadsPage } from '@/pages/LeadsPage';
 import { SettingsPage } from '@/pages/SettingsPage';
 import { CompanyDetailPage } from '@/pages/companies/CompanyDetailPage';
@@ -16,7 +16,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <Navigate to="/dashboard" replace /> },
       { path: 'dashboard', element: <DashboardPage /> },
-      { path: 'search', element: <SearchPage /> },
+      { path: 'new-company', element: <NewCompanyPage /> },
       { path: 'leads', element: <LeadsPage /> },
       { path: 'leads/:id', element: <CompanyDetailPage /> },
       { path: 'companies/:id', element: <CompanyDetailPage /> },
