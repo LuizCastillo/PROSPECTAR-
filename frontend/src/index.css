@@ -6,4 +6,23 @@
   html {
     font-family: 'Inter', system-ui, sans-serif;
   }
+  h1, h2, h3 {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+  }
+  ::selection {
+    background-color: #E8703A;
+    color: #12100D;
+  }
+  :focus-visible {
+    outline: 2px solid #E8703A;
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

@@ -24,7 +24,7 @@ export function LeadsPage() {
   }, []);
 
   return (
-    <div className="p-8">
+    <div className="p-5 md:p-8">
       <PageHeader title="Leads" subtitle="Todas as empresas cadastradas manualmente." />
 
       {error && (
@@ -44,15 +44,15 @@ export function LeadsPage() {
             <Link
               key={c.id}
               to={`/companies/${c.id}`}
-              className="flex items-center justify-between rounded-xl border border-ink-800 bg-ink-900 p-4 shadow-card hover:border-accent-500"
+              className="flex items-center justify-between rounded-xl border border-ink-800 bg-ink-900 p-4 shadow-card hover:border-ember-500"
             >
               <div>
-                <p className="font-medium text-white">{c.name}</p>
-                <p className="text-xs text-ink-500">
+                <p className="font-medium text-paper">{c.name}</p>
+                <p className="text-xs text-ink-400">
                   {c.category ?? 'sem categoria'} · {[c.city, c.state].filter(Boolean).join(', ') || 'sem local'}
                 </p>
               </div>
-              <span className="rounded-full border border-ink-700 px-2.5 py-0.5 text-xs text-ink-500">
+              <span className="rounded-full border border-ink-700 px-2.5 py-0.5 text-xs text-ink-400">
                 {c.pipeline_status}
               </span>
             </Link>

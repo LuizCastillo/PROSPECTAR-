@@ -9,8 +9,8 @@ interface CreatedCompany {
 }
 
 const fieldClass =
-  'w-full rounded-lg border border-ink-700 bg-ink-800 px-3 py-2 text-sm text-white outline-none focus:border-accent-500';
-const labelClass = 'mb-1 block text-xs font-medium text-ink-500';
+  'w-full rounded-lg border border-ink-700 bg-ink-800 px-3 py-2 text-sm text-paper outline-none focus:border-ember-500';
+const labelClass = 'mb-1 block text-xs font-medium text-ink-400';
 
 export function NewCompanyPage() {
   const navigate = useNavigate();
@@ -23,9 +23,9 @@ export function NewCompanyPage() {
   const [postalCode, setPostalCode] = useState('');
   const [phone, setPhone] = useState('');
   const [website, setWebsite] = useState('');
-  const [primaryColor, setPrimaryColor] = useState('#5B7FFF');
-  const [secondaryColor, setSecondaryColor] = useState('#0B0E14');
-  const [accentColor, setAccentColor] = useState('#FFB020');
+  const [primaryColor, setPrimaryColor] = useState('#E8703A');
+  const [secondaryColor, setSecondaryColor] = useState('#12100D');
+  const [accentColor, setAccentColor] = useState('#4C7A92');
   const [clientSpecifications, setClientSpecifications] = useState('');
 
   const [loading, setLoading] = useState(false);
@@ -57,7 +57,7 @@ export function NewCompanyPage() {
   }
 
   return (
-    <div className="p-8">
+    <div className="p-5 md:p-8">
       <PageHeader
         title="Nova empresa"
         subtitle="Cadastre os dados que você já levantou com o cliente — nada aqui é buscado automaticamente."
@@ -65,8 +65,8 @@ export function NewCompanyPage() {
 
       <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
         <section className="rounded-xl border border-ink-800 bg-ink-900 p-6 shadow-card">
-          <h2 className="mb-4 text-sm font-semibold text-white">Dados da empresa</h2>
-          <div className="grid grid-cols-2 gap-4">
+          <h2 className="mb-4 text-sm font-semibold text-paper">Dados da empresa</h2>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="col-span-2">
               <label className={labelClass}>Nome *</label>
               <input value={name} onChange={(e) => setName(e.target.value)} required className={fieldClass} />
@@ -108,8 +108,8 @@ export function NewCompanyPage() {
         </section>
 
         <section className="rounded-xl border border-ink-800 bg-ink-900 p-6 shadow-card">
-          <h2 className="mb-4 text-sm font-semibold text-white">Identidade visual</h2>
-          <div className="grid grid-cols-3 gap-4">
+          <h2 className="mb-4 text-sm font-semibold text-paper">Identidade visual</h2>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div>
               <label className={labelClass}>Cor primária</label>
               <div className="flex items-center gap-2">
@@ -154,8 +154,8 @@ export function NewCompanyPage() {
         </section>
 
         <section className="rounded-xl border border-ink-800 bg-ink-900 p-6 shadow-card">
-          <h2 className="mb-1 text-sm font-semibold text-white">Especificações do cliente</h2>
-          <p className="mb-3 text-xs text-ink-500">
+          <h2 className="mb-1 text-sm font-semibold text-paper">Especificações do cliente</h2>
+          <p className="mb-3 text-xs text-ink-400">
             Personalizações, pedidos específicos ou observações que o cliente passou — isso alimenta a geração do
             protótipo e do prompt final.
           </p>
@@ -175,7 +175,7 @@ export function NewCompanyPage() {
         <button
           type="submit"
           disabled={loading}
-          className="rounded-lg bg-accent-500 px-4 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50"
+          className="rounded-lg bg-ember-500 px-4 py-2 text-sm font-medium text-paper hover:opacity-90 disabled:opacity-50"
         >
           {loading ? 'Salvando...' : 'Salvar empresa'}
         </button>

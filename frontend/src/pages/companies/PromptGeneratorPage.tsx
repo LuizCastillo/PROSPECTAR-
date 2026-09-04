@@ -8,7 +8,7 @@ export function PromptGeneratorPage() {
   // esquerda: dados da empresa | centro: Business/Brand/Strategy/Score | direita: prompt final + versionamento.
 
   return (
-    <div className="p-8">
+    <div className="p-5 md:p-8">
       <PageHeader
         title="Gerador de prompt"
         subtitle={`Empresa ${companyId ?? ''} — briefing e prompt final para IA de desenvolvimento.`}
