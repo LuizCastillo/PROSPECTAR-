@@ -14,8 +14,17 @@ const schema = z.object({
   SUPABASE_ANON_KEY: z.string().min(1),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
 
-  LLM_PROVIDER: z.enum(['anthropic', 'openai', 'mock']).default('mock'),
-  LLM_API_KEY: z.string().min(1).optional(),
+  // Gemini gera o protótipo (HTML/CSS estático) a partir dos dados da
+  // empresa + identidade visual + especificações do cliente.
+  GEMINI_API_KEY: z.string().min(1).optional(),
+  GEMINI_API_URL: z.string().url().default('https://generativelanguage.googleapis.com'),
+  GEMINI_MODEL: z.string().min(1).default('gemini-2.0-flash'),
+
+  // Groq recebe o protótipo aprovado + informações adicionais e gera o
+  // projeto completo (frontend + backend) para download.
+  GROQ_API_KEY: z.string().min(1).optional(),
+  GROQ_API_URL: z.string().url().default('https://api.groq.com/openai/v1'),
+  GROQ_MODEL: z.string().min(1).default('llama-3.3-70b-versatile'),
 
   RESEND_API_KEY: z.string().min(1).optional(),
 });
@@ -31,6 +40,7 @@ if (!parsed.success) {
 export const env = parsed.data;
 
 export const integrationStatus = {
-  llm: Boolean(env.LLM_API_KEY) && env.LLM_PROVIDER !== 'mock',
+  gemini: Boolean(env.GEMINI_API_KEY),
+  groq: Boolean(env.GROQ_API_KEY),
   resend: Boolean(env.RESEND_API_KEY),
 };

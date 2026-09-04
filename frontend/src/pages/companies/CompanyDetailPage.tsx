@@ -26,6 +26,14 @@ interface Mockup {
   generated_at: string;
 }
 
+interface FullSite {
+  id: string;
+  version: number;
+  fileCount: number;
+  generatedAt: string;
+  model: string;
+}
+
 const tabs = [
   'Overview',
   'Business',
@@ -36,6 +44,7 @@ const tabs = [
   'Strategy',
   'Prompts',
   'Protótipo',
+  'Site completo',
   'CRM',
   'History',
 ];
@@ -45,9 +54,13 @@ export function CompanyDetailPage() {
   const [activeTab, setActiveTab] = useState(tabs[0]);
   const [company, setCompany] = useState<Company | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const [mockupLoading, setMockupLoading] = useState(false);
   const [mockup, setMockup] = useState<Mockup | null>(null);
-  const [error, setError] = useState<string | null>(null);
+
+  const [siteLoading, setSiteLoading] = useState(false);
+  const [fullSite, setFullSite] = useState<FullSite | null>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -72,8 +85,25 @@ export function CompanyDetailPage() {
     }
   }
 
+  async function handleGenerateFullSite() {
+    if (!id) return;
+    setSiteLoading(true);
+    setError(null);
+    try {
+      const result = await api.post<FullSite>(`/api/companies/${id}/site`);
+      setFullSite(result);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro ao gerar site completo.');
+    } finally {
+      setSiteLoading(false);
+    }
+  }
+
   const apiBase = (import.meta.env.VITE_API_URL as string) ?? 'http://localhost:4000';
   const mockupUrl = mockup ? `${apiBase}/api/companies/${id}/mockup/raw?version=${mockup.version}` : null;
+  const siteDownloadUrl = fullSite
+    ? `${apiBase}/api/companies/${id}/site/download?version=${fullSite.version}`
+    : null;
 
   return (
     <div className="p-8">
@@ -148,8 +178,8 @@ export function CompanyDetailPage() {
       {activeTab === 'Protótipo' && (
         <div className="rounded-xl border border-ink-800 bg-ink-900 p-6 shadow-card">
           <p className="mb-4 text-sm text-ink-500">
-            Gera um protótipo estático (HTML) do site a partir dos dados e especificações cadastrados, pronto
-            para enviar o link ao cliente antes de iniciar o desenvolvimento real.
+            Gera um protótipo estático (HTML) via Gemini, a partir dos dados e especificações cadastrados —
+            pronto para enviar o link ao cliente antes de partir para o desenvolvimento real.
           </p>
           <button
             onClick={handleGenerateMockup}
@@ -176,7 +206,36 @@ export function CompanyDetailPage() {
         </div>
       )}
 
-      {activeTab !== 'Overview' && activeTab !== 'Protótipo' && (
+      {activeTab === 'Site completo' && (
+        <div className="rounded-xl border border-ink-800 bg-ink-900 p-6 shadow-card">
+          <p className="mb-4 text-sm text-ink-500">
+            Depois que o cliente aprovar o protótipo, gera o projeto completo (frontend + backend) via Groq,
+            usando o protótipo aprovado como referência de layout e conteúdo. Requer um protótipo já gerado.
+          </p>
+          <button
+            onClick={handleGenerateFullSite}
+            disabled={siteLoading}
+            className="rounded-lg bg-accent-500 px-4 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50"
+          >
+            {siteLoading ? 'Gerando...' : 'Gerar site completo'}
+          </button>
+          {siteDownloadUrl && (
+            <div className="mt-4">
+              <p className="mb-2 text-xs text-ink-500">
+                Versão {fullSite?.version} — {fullSite?.fileCount} arquivo(s) gerados (modelo: {fullSite?.model})
+              </p>
+              <a
+                href={siteDownloadUrl}
+                className="inline-block rounded-lg border border-accent-500 px-4 py-2 text-sm font-medium text-accent-400 hover:bg-accent-500/10"
+              >
+                Baixar projeto (.zip)
+              </a>
+            </div>
+          )}
+        </div>
+      )}
+
+      {!['Overview', 'Protótipo', 'Site completo'].includes(activeTab) && (
         <EmptyState
           title={`${activeTab} indisponível`}
           description="Esta aba será preenchida com dados reais nas próximas fases do pipeline."

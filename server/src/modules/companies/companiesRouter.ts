@@ -8,6 +8,9 @@ import {
   generateMockup,
   getMockupVersion,
   getLatestMockup,
+  generateFullSite,
+  getFullSiteFiles,
+  buildSiteZipStream,
 } from './companiesService.js';
 
 export const companiesRouter = Router();
@@ -87,6 +90,41 @@ companiesRouter.get('/:id/mockup/raw', async (req, res, next) => {
 
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.send(mockup.content);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Gera o site completo (frontend + backend) via Groq, usando o protótipo
+// aprovado (Gemini) como referência. Exige que um protótipo já exista.
+companiesRouter.post('/:id/site', async (req, res, next) => {
+  try {
+    const result = await generateFullSite(req.params.id);
+    // Não devolve o conteúdo dos arquivos na resposta (pode ser grande) —
+    // só os metadados; o conteúdo é baixado via /site/download.
+    res.status(201).json({
+      id: result.id,
+      version: result.version,
+      fileCount: result.fileCount,
+      generatedAt: result.generated_at,
+      model: result.model,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Baixa o site gerado como .zip (a versão mais recente, ou uma específica
+// via ?version=N).
+companiesRouter.get('/:id/site/download', async (req, res, next) => {
+  try {
+    const versionParam = req.query.version;
+    const version = typeof versionParam === 'string' ? Number(versionParam) : undefined;
+    const files = await getFullSiteFiles(req.params.id, version);
+
+    res.setHeader('Content-Type', 'application/zip');
+    res.setHeader('Content-Disposition', `attachment; filename="site-${req.params.id}.zip"`);
+    buildSiteZipStream(files).pipe(res);
   } catch (err) {
     next(err);
   }
