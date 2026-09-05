@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { AppError } from '@shared/errors/AppError.js';
+import { requireAuth } from '@shared/auth/requireAuth.js';
 import {
   createCompany,
   listCompanies,
@@ -39,39 +40,46 @@ const createCompanySchema = z.object({
     .optional(),
 });
 
-companiesRouter.post('/', async (req, res, next) => {
+// Tudo que gerencia dados do usuário (criar, listar, ver, gerar) exige login.
+// Os endpoints que SERVEM o resultado final (mockup/raw, site/download) ficam
+// públicos de propósito — são links feitos para mandar ao cliente final, que
+// não tem conta no sistema (mesma lógica de "qualquer um com o link" do
+// Google Docs). A empresa em si só é acessível a quem é dono dela; o link
+// gerado devolve conteúdo estático sem expor mais nada da conta.
+
+companiesRouter.post('/', requireAuth, async (req, res, next) => {
   try {
     const parsed = createCompanySchema.safeParse(req.body);
     if (!parsed.success) {
       throw AppError.validation('Dados da empresa inválidos.', parsed.error.flatten());
     }
-    const company = await createCompany(parsed.data);
+    const company = await createCompany(req.userId!, parsed.data);
     res.status(201).json(company);
   } catch (err) {
     next(err);
   }
 });
 
-companiesRouter.get('/', async (_req, res, next) => {
+companiesRouter.get('/', requireAuth, async (req, res, next) => {
   try {
-    res.json(await listCompanies());
+    res.json(await listCompanies(req.userId!));
   } catch (err) {
     next(err);
   }
 });
 
-companiesRouter.get('/:id', async (req, res, next) => {
+companiesRouter.get('/:id', requireAuth, async (req, res, next) => {
   try {
-    res.json(await getCompanyById(req.params.id));
+    res.json(await getCompanyById(req.params.id, req.userId!));
   } catch (err) {
     next(err);
   }
 });
 
 // Gera uma nova versão de protótipo para a empresa.
-companiesRouter.post('/:id/mockup', async (req, res, next) => {
+companiesRouter.post('/:id/mockup', requireAuth, async (req, res, next) => {
   try {
-    const mockup = await generateMockup(req.params.id);
+    const mockup = await generateMockup(req.params.id, req.userId!);
     res.status(201).json(mockup);
   } catch (err) {
     next(err);
@@ -80,6 +88,7 @@ companiesRouter.post('/:id/mockup', async (req, res, next) => {
 
 // Retorna o HTML cru do protótipo (a versão mais recente, ou uma específica
 // via ?version=N) — pensado para ser mandado como link direto ao cliente.
+// Público de propósito (ver nota acima).
 companiesRouter.get('/:id/mockup/raw', async (req, res, next) => {
   try {
     const versionParam = req.query.version;
@@ -97,11 +106,9 @@ companiesRouter.get('/:id/mockup/raw', async (req, res, next) => {
 
 // Gera o site completo (frontend + backend) via Groq, usando o protótipo
 // aprovado (Gemini) como referência. Exige que um protótipo já exista.
-companiesRouter.post('/:id/site', async (req, res, next) => {
+companiesRouter.post('/:id/site', requireAuth, async (req, res, next) => {
   try {
-    const result = await generateFullSite(req.params.id);
-    // Não devolve o conteúdo dos arquivos na resposta (pode ser grande) —
-    // só os metadados; o conteúdo é baixado via /site/download.
+    const result = await generateFullSite(req.params.id, req.userId!);
     res.status(201).json({
       id: result.id,
       version: result.version,
@@ -114,8 +121,7 @@ companiesRouter.post('/:id/site', async (req, res, next) => {
   }
 });
 
-// Baixa o site gerado como .zip (a versão mais recente, ou uma específica
-// via ?version=N).
+// Baixa o site gerado como .zip. Público de propósito (ver nota acima).
 companiesRouter.get('/:id/site/download', async (req, res, next) => {
   try {
     const versionParam = req.query.version;

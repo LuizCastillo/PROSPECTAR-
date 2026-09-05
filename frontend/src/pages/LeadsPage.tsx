@@ -44,15 +44,15 @@ export function LeadsPage() {
             <Link
               key={c.id}
               to={`/companies/${c.id}`}
-              className="flex items-center justify-between rounded-xl border border-ink-800 bg-ink-900 p-4 shadow-card hover:border-ember-500"
+              className="flex items-center justify-between rounded-xl border border-slate-200 dark:border-ink-800 bg-white dark:bg-ink-900 p-4 shadow-card-light dark:shadow-card hover:border-iris-500"
             >
               <div>
-                <p className="font-medium text-paper">{c.name}</p>
-                <p className="text-xs text-ink-400">
+                <p className="font-medium text-slate-900 dark:text-paper">{c.name}</p>
+                <p className="text-xs text-slate-500 dark:text-ink-400">
                   {c.category ?? 'sem categoria'} · {[c.city, c.state].filter(Boolean).join(', ') || 'sem local'}
                 </p>
               </div>
-              <span className="rounded-full border border-ink-700 px-2.5 py-0.5 text-xs text-ink-400">
+              <span className="rounded-full border border-slate-200 dark:border-ink-700 px-2.5 py-0.5 text-xs text-slate-500 dark:text-ink-400">
                 {c.pipeline_status}
               </span>
             </Link>

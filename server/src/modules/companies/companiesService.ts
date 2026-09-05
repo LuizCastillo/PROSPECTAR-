@@ -29,7 +29,7 @@ export interface CreateCompanyInput {
 // Todo dado aqui vem de digitação manual do usuário — não há "fonte externa"
 // a rastrear, então, diferente do pipeline antigo (OSM), não há necessidade
 // de metadados de confiança/proveniência por campo: o usuário É a fonte.
-export async function createCompany(input: CreateCompanyInput) {
+export async function createCompany(userId: string, input: CreateCompanyInput) {
   const { data: company, error: companyError } = await supabaseAdmin
     .from('companies')
     .insert({
@@ -43,6 +43,7 @@ export async function createCompany(input: CreateCompanyInput) {
       website: input.website ?? null,
       client_specifications: input.clientSpecifications ?? null,
       pipeline_status: 'IMPORTED',
+      user_id: userId,
     })
     .select()
     .single();
@@ -68,17 +69,23 @@ export async function createCompany(input: CreateCompanyInput) {
   return company;
 }
 
-export async function listCompanies() {
+export async function listCompanies(userId: string) {
   const { data, error } = await supabaseAdmin
     .from('companies')
     .select('*')
+    .eq('user_id', userId)
     .order('created_at', { ascending: false });
   if (error) throw AppError.externalApi('Falha ao listar empresas.', error);
   return data ?? [];
 }
 
-export async function getCompanyById(id: string) {
-  const { data: company, error } = await supabaseAdmin.from('companies').select('*').eq('id', id).single();
+export async function getCompanyById(id: string, userId: string) {
+  const { data: company, error } = await supabaseAdmin
+    .from('companies')
+    .select('*')
+    .eq('id', id)
+    .eq('user_id', userId)
+    .single();
   if (error || !company) throw AppError.notFound('Empresa não encontrada.');
 
   const { data: brand } = await supabaseAdmin
@@ -108,8 +115,8 @@ async function nextPromptVersion(companyId: string, type: string): Promise<numbe
 // Protótipo (Gemini) — HTML/CSS estático, gerado a partir dos dados
 // cadastrados manualmente + identidade visual + especificações do cliente.
 // ---------------------------------------------------------------------------
-export async function generateMockup(companyId: string) {
-  const company = await getCompanyById(companyId);
+export async function generateMockup(companyId: string, userId: string) {
+  const company = await getCompanyById(companyId, userId);
 
   const prompt = buildMockupPrompt({
     companyFacts: {
@@ -199,8 +206,8 @@ export async function getLatestMockup(companyId: string) {
 // gera um projeto funcional (frontend + backend), salvo como JSON de
 // arquivos {path, content} e servido como .zip para download.
 // ---------------------------------------------------------------------------
-export async function generateFullSite(companyId: string) {
-  const company = await getCompanyById(companyId);
+export async function generateFullSite(companyId: string, userId: string) {
+  const company = await getCompanyById(companyId, userId);
   const mockup = await getLatestMockup(companyId); // lança 404 se ainda não houver protótipo
 
   if (!env.GROQ_API_KEY) {

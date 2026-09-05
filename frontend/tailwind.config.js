@@ -1,25 +1,26 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: 'class',
   content: ['./index.html', './src/**/*.{ts,tsx}'],
   theme: {
     extend: {
       colors: {
         ink: {
-          950: '#12100D',
-          900: '#1A1712',
-          850: '#211D17',
-          800: '#28231C',
-          700: '#3A332788',
-          600: '#4A4032',
-          500: '#7A7062',
-          400: '#A69C8C',
+          950: '#121317',
+          900: '#191B20',
+          850: '#20222A',
+          800: '#282B34',
+          700: '#3A3E4A66',
+          600: '#4B5060',
+          500: '#6B7080',
+          400: '#9BA0AE',
         },
-        paper: '#F3EEE3',
-        ember: {
-          600: '#C85A28',
-          500: '#E8703A',
-          400: '#F2905E',
-          300: '#F7B085',
+        paper: '#F3F4F6',
+        iris: {
+          600: '#5B54D6',
+          500: '#6E67E8',
+          400: '#8B85EF',
+          300: '#AFA9F5',
         },
         blueprint: {
           600: '#3A6377',
@@ -37,7 +38,7 @@ export default {
       },
       boxShadow: {
         card: '0 1px 2px rgba(0,0,0,0.5), 0 12px 28px -12px rgba(0,0,0,0.6)',
-        ember: '0 8px 24px -8px rgba(232,112,58,0.45)',
+        'card-light': '0 1px 2px rgba(0,0,0,0.04), 0 8px 20px -8px rgba(0,0,0,0.08)',
       },
     },
   },

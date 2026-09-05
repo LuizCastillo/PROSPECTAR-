@@ -9,8 +9,8 @@ interface CreatedCompany {
 }
 
 const fieldClass =
-  'w-full rounded-lg border border-ink-700 bg-ink-800 px-3 py-2 text-sm text-paper outline-none focus:border-ember-500';
-const labelClass = 'mb-1 block text-xs font-medium text-ink-400';
+  'w-full rounded-lg border border-slate-200 dark:border-ink-700 bg-slate-100 dark:bg-ink-800 px-3 py-2 text-sm text-slate-900 dark:text-paper outline-none focus:border-iris-500';
+const labelClass = 'mb-1 block text-xs font-medium text-slate-500 dark:text-ink-400';
 
 export function NewCompanyPage() {
   const navigate = useNavigate();
@@ -23,7 +23,7 @@ export function NewCompanyPage() {
   const [postalCode, setPostalCode] = useState('');
   const [phone, setPhone] = useState('');
   const [website, setWebsite] = useState('');
-  const [primaryColor, setPrimaryColor] = useState('#E8703A');
+  const [primaryColor, setPrimaryColor] = useState('#6E67E8');
   const [secondaryColor, setSecondaryColor] = useState('#12100D');
   const [accentColor, setAccentColor] = useState('#4C7A92');
   const [clientSpecifications, setClientSpecifications] = useState('');
@@ -64,8 +64,8 @@ export function NewCompanyPage() {
       />
 
       <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
-        <section className="rounded-xl border border-ink-800 bg-ink-900 p-6 shadow-card">
-          <h2 className="mb-4 text-sm font-semibold text-paper">Dados da empresa</h2>
+        <section className="rounded-xl border border-slate-200 dark:border-ink-800 bg-white dark:bg-ink-900 p-6 shadow-card-light dark:shadow-card">
+          <h2 className="mb-4 text-sm font-semibold text-slate-900 dark:text-paper">Dados da empresa</h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="col-span-2">
               <label className={labelClass}>Nome *</label>
@@ -107,8 +107,8 @@ export function NewCompanyPage() {
           </div>
         </section>
 
-        <section className="rounded-xl border border-ink-800 bg-ink-900 p-6 shadow-card">
-          <h2 className="mb-4 text-sm font-semibold text-paper">Identidade visual</h2>
+        <section className="rounded-xl border border-slate-200 dark:border-ink-800 bg-white dark:bg-ink-900 p-6 shadow-card-light dark:shadow-card">
+          <h2 className="mb-4 text-sm font-semibold text-slate-900 dark:text-paper">Identidade visual</h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div>
               <label className={labelClass}>Cor primária</label>
@@ -117,7 +117,7 @@ export function NewCompanyPage() {
                   type="color"
                   value={primaryColor}
                   onChange={(e) => setPrimaryColor(e.target.value)}
-                  className="h-9 w-9 shrink-0 cursor-pointer rounded border border-ink-700 bg-ink-800"
+                  className="h-9 w-9 shrink-0 cursor-pointer rounded border border-slate-200 dark:border-ink-700 bg-slate-100 dark:bg-ink-800"
                 />
                 <input value={primaryColor} onChange={(e) => setPrimaryColor(e.target.value)} className={fieldClass} />
               </div>
@@ -129,7 +129,7 @@ export function NewCompanyPage() {
                   type="color"
                   value={secondaryColor}
                   onChange={(e) => setSecondaryColor(e.target.value)}
-                  className="h-9 w-9 shrink-0 cursor-pointer rounded border border-ink-700 bg-ink-800"
+                  className="h-9 w-9 shrink-0 cursor-pointer rounded border border-slate-200 dark:border-ink-700 bg-slate-100 dark:bg-ink-800"
                 />
                 <input
                   value={secondaryColor}
@@ -145,7 +145,7 @@ export function NewCompanyPage() {
                   type="color"
                   value={accentColor}
                   onChange={(e) => setAccentColor(e.target.value)}
-                  className="h-9 w-9 shrink-0 cursor-pointer rounded border border-ink-700 bg-ink-800"
+                  className="h-9 w-9 shrink-0 cursor-pointer rounded border border-slate-200 dark:border-ink-700 bg-slate-100 dark:bg-ink-800"
                 />
                 <input value={accentColor} onChange={(e) => setAccentColor(e.target.value)} className={fieldClass} />
               </div>
@@ -153,9 +153,9 @@ export function NewCompanyPage() {
           </div>
         </section>
 
-        <section className="rounded-xl border border-ink-800 bg-ink-900 p-6 shadow-card">
-          <h2 className="mb-1 text-sm font-semibold text-paper">Especificações do cliente</h2>
-          <p className="mb-3 text-xs text-ink-400">
+        <section className="rounded-xl border border-slate-200 dark:border-ink-800 bg-white dark:bg-ink-900 p-6 shadow-card-light dark:shadow-card">
+          <h2 className="mb-1 text-sm font-semibold text-slate-900 dark:text-paper">Especificações do cliente</h2>
+          <p className="mb-3 text-xs text-slate-500 dark:text-ink-400">
             Personalizações, pedidos específicos ou observações que o cliente passou — isso alimenta a geração do
             protótipo e do prompt final.
           </p>
@@ -175,7 +175,7 @@ export function NewCompanyPage() {
         <button
           type="submit"
           disabled={loading}
-          className="rounded-lg bg-ember-500 px-4 py-2 text-sm font-medium text-paper hover:opacity-90 disabled:opacity-50"
+          className="rounded-lg bg-iris-500 px-4 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50"
         >
           {loading ? 'Salvando...' : 'Salvar empresa'}
         </button>

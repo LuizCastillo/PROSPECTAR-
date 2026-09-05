@@ -10,11 +10,11 @@
     font-family: 'Space Grotesk', system-ui, sans-serif;
   }
   ::selection {
-    background-color: #E8703A;
-    color: #12100D;
+    background-color: #6E67E8;
+    color: #F3F4F6;
   }
   :focus-visible {
-    outline: 2px solid #E8703A;
+    outline: 2px solid #6E67E8;
     outline-offset: 2px;
   }
 }
@@ -25,4 +25,30 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* Scrollbar customizada — fina e discreta, não a barra cinza grossa padrão do navegador */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(148 163 184 / 0.5) transparent;
+}
+.dark * {
+  scrollbar-color: rgb(75 80 96 / 0.6) transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background-color: rgb(148 163 184 / 0.5);
+  border-radius: 9999px;
+}
+.dark *::-webkit-scrollbar-thumb {
+  background-color: rgb(75 80 96 / 0.6);
+}
+*::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(100 116 139 / 0.7);
 }
