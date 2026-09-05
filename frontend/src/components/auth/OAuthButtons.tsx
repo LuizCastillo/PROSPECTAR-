@@ -1,8 +1,21 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 
 export function OAuthButtons() {
   const [loadingProvider, setLoadingProvider] = useState<'google' | 'github' | null>(null);
+
+  useEffect(() => {
+    // Se o usuário cancela o login no provedor e volta com o botão "voltar"
+    // do navegador, a página pode ser restaurada do bfcache com o estado do
+    // React congelado no momento do clique — travando os botões pra sempre
+    // achando que ainda está "carregando". O evento pageshow com
+    // persisted=true detecta exatamente essa restauração e reseta o estado.
+    function handlePageShow(event: PageTransitionEvent) {
+      if (event.persisted) setLoadingProvider(null);
+    }
+    window.addEventListener('pageshow', handlePageShow);
+    return () => window.removeEventListener('pageshow', handlePageShow);
+  }, []);
 
   async function handleOAuth(provider: 'google' | 'github') {
     setLoadingProvider(provider);
